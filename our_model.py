@@ -165,7 +165,7 @@ def _preprocess_data(data):
 
     return predict_vector
 
-def load_model(path_to_model:'assets/trained-models/mlr_model.pkl'):
+def load_model(path_to_model:'assets/trained-models/random_forest_model.pkl'):
     """Adapter function to load our pretrained model into memory.
 
     Parameters
