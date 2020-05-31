@@ -59,7 +59,6 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    feature_vector_df = data
     feature_vector_df.columns = [col.replace("-"," ") for col in feature_vector_df.columns]
     feature_vector_df.columns = [col.replace("(Mo = 1)"," ") for col in feature_vector_df.columns]
     feature_vector_df.columns = [col.replace(" ","") for col in feature_vector_df.columns]
