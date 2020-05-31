@@ -149,8 +149,10 @@ def _preprocess_data(data):
     feature_vector_df = pd.get_dummies(feature_vector_df,
                                    columns=['PlatformType', 'PersonalorBusiness', 'PickupDayofMonth', 'PickupWeekday', 'DeliveryTimes'],
                                    prefix=['platformtype', 'personalbusiness', 'dayofmonth', 'weekday', 'pickuptimes'])
-    
+
     # ------------------------------------------------------------------------
+    
+    predict_vector = feature_vector_df
 
     return predict_vector
 
