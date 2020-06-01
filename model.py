@@ -26,7 +26,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-%matplotlib inline
 import math
 from pprint import pprint
 from sklearn import metrics
@@ -48,7 +47,6 @@ from sklearn.ensemble import BaggingRegressor
 
 # Saving model with pickle
 import pickle
-sns.set(palette='pastel')
 
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
@@ -187,7 +185,7 @@ def _preprocess_data(data):
        'weekday_7', 'pickuptimes_Afternoon', 'pickuptimes_Evening',
        'pickuptimes_Late Afternoon', 'pickuptimes_Late Morning',
        'pickuptimes_Morning']
-       
+
     for col in model_columns:
           if col not in training_features.columns:
                training_features[col] = 0
