@@ -24,9 +24,17 @@
 # Helper Dependencies
 import numpy as np
 import pandas as pd
+pd.options.mode.chained_assignment = None 
 import pickle
 import json
+import math
 
+# Machine learning models
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import train_test_split
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
 
