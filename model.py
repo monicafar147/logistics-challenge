@@ -24,27 +24,11 @@
 # Helper Dependencies
 import json
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 import math
-from pprint import pprint
-from sklearn import metrics
-from sklearn.model_selection import train_test_split
 
-# Scaling
-from sklearn.preprocessing import StandardScaler
-
-# Hyperparameter tuning
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import RandomizedSearchCV
-
-# Machine learning models
-from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
+# Machine learning model
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Lasso
-from sklearn.ensemble import BaggingRegressor
 
 # Saving model with pickle
 import pickle
