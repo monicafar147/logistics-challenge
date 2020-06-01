@@ -65,39 +65,42 @@ def _preprocess_data(data):
 
     # Convert time columns to datetime 
     feature_vector_df['PickupTime'] = pd.to_datetime(feature_vector_df['PickupTime']).dt.time
-    feature_vector_df['PlacementTime'] = pd.to_datetime(feature_vector_df['PlacementTime']).dt.time
-    feature_vector_df['ConfirmationTime'] = pd.to_datetime(feature_vector_df['ConfirmationTime']).dt.time
-    feature_vector_df['ArrivalatPickupTime'] = pd.to_datetime(feature_vector_df['ArrivalatPickupTime']).dt.time
-    feature_vector_df['ArrivalatDestinationTime'] = pd.to_datetime(feature_vector_df['ArrivalatDestinationTime']).dt.time
+    #feature_vector_df['PlacementTime'] = pd.to_datetime(feature_vector_df['PlacementTime']).dt.time
+    #feature_vector_df['ConfirmationTime'] = pd.to_datetime(feature_vector_df['ConfirmationTime']).dt.time
+    #feature_vector_df['ArrivalatPickupTime'] = pd.to_datetime(feature_vector_df['ArrivalatPickupTime']).dt.time
+    #feature_vector_df['ArrivalatDestinationTime'] = pd.to_datetime(feature_vector_df['ArrivalatDestinationTime']).dt.time
 
     # Converting columns into categories
-    feature_vector_df['VehicleType'] = feature_vector_df['VehicleType'].astype('category')
-    feature_vector_df['PlatformType'] = feature_vector_df['PlatformType'].astype('category')
-    feature_vector_df['PersonalorBusiness'] = feature_vector_df['PersonalorBusiness'].astype('category')
+    #feature_vector_df['VehicleType'] = feature_vector_df['VehicleType'].astype('category')
+    #feature_vector_df['PlatformType'] = feature_vector_df['PlatformType'].astype('category')
+    #feature_vector_df['PersonalorBusiness'] = feature_vector_df['PersonalorBusiness'].astype('category')
 
-    feature_vector_df['PlacementDay of Month'] = feature_vector_df['PlacementDayofMonth'].astype('category')
-    feature_vector_df['PlacementWeekday'] = feature_vector_df['PlacementWeekday'].astype('category')
-    feature_vector_df['ConfirmationDayofMonth'] = feature_vector_df['ConfirmationDayofMonth'].astype('category')
-    feature_vector_df['ConfirmationWeekday'] = feature_vector_df['ConfirmationWeekday'].astype('category')
+    #feature_vector_df['PlacementDay of Month'] = feature_vector_df['PlacementDayofMonth'].astype('category')
+    #feature_vector_df['PlacementWeekday'] = feature_vector_df['PlacementWeekday'].astype('category')
+    #feature_vector_df['ConfirmationDayofMonth'] = feature_vector_df['ConfirmationDayofMonth'].astype('category')
+    #feature_vector_df['ConfirmationWeekday'] = feature_vector_df['ConfirmationWeekday'].astype('category')
 
-    feature_vector_df['ArrivalatPickupDayofMonth'] = feature_vector_df['ArrivalatPickupDayofMonth'].astype('category')
-    feature_vector_df['ArrivalatPickupWeekday'] = feature_vector_df['ArrivalatPickupWeekday'].astype('category')
-    feature_vector_df['ArrivalatDestinationDayofMonth'] = feature_vector_df['ArrivalatDestinationDayofMonth'].astype('category')
-    feature_vector_df['ArrivalatDestinationWeekday'] = feature_vector_df['ArrivalatDestinationWeekday'].astype('category')
+    #feature_vector_df['ArrivalatPickupDayofMonth'] = feature_vector_df['ArrivalatPickupDayofMonth'].astype('category')
+    #feature_vector_df['ArrivalatPickupWeekday'] = feature_vector_df['ArrivalatPickupWeekday'].astype('category')
+    #feature_vector_df['ArrivalatDestinationDayofMonth'] = feature_vector_df['ArrivalatDestinationDayofMonth'].astype('category')
+    #feature_vector_df['ArrivalatDestinationWeekday'] = feature_vector_df['ArrivalatDestinationWeekday'].astype('category')
 
-    feature_vector_df[['PickupDayofMonth', 'PickupWeekday']] = feature_vector_df[['PickupDayofMonth', 'PickupWeekday']].astype('category')
-    feature_vector_df[['PlatformType', 'PersonalorBusiness']] = feature_vector_df[['PlatformType', 'PersonalorBusiness']].astype('category')
+    #feature_vector_df[['PickupDayofMonth', 'PickupWeekday']] = feature_vector_df[['PickupDayofMonth', 'PickupWeekday']].astype('category')
+    #feature_vector_df[['PlatformType', 'PersonalorBusiness']] = feature_vector_df[['PlatformType', 'PersonalorBusiness']].astype('category')
 
     # Dropping rows where delivery time is less than 60s
-    feature_vector_df = feature_vector_df[feature_vector_df['TimefromPickuptoArrival'] > 60]
+    #feature_vector_df = feature_vector_df[feature_vector_df['TimefromPickuptoArrival'] > 60]
     
     # Selecting columns to match training data
-    feature_vector_df = feature_vector_df[['PlatformType', 'PersonalorBusiness',
-                                       'PickupDayofMonth', 'PickupWeekday',
-                                       'PickupTime', 'PickupLat',	'PickupLong',
-                                       'DestinationLat',	'DestinationLong',
-                                       'Distance(KM)', 'Temperature',
-                                       'Precipitationinmillimeters']]
+    #feature_vector_df = feature_vector_df[['PlatformType', 'PersonalorBusiness',
+    #                                   'PickupDayofMonth', 'PickupWeekday',
+    #                                   'PickupTime', 'PickupLat',	'PickupLong',
+    #                                   'DestinationLat',	'DestinationLong',
+    #                                   'Distance(KM)', 'Temperature',
+    #                                   'Precipitationinmillimeters']]
+
+    # Selecting columns to match training data
+    feature_vector_df = feature_vector_df[['PickupLat','PickupLong','DestinationLat','DestinationLong','Distance(KM)','Temperature','Precipitationinmillimeters','PickupTime']]
 
     # Function to assign time values into time buckets
     def assign_time_category(delivery_time):
@@ -114,14 +117,14 @@ def _preprocess_data(data):
         elif delivery_time >= dts[0][4] and delivery_time < dts[0][5]:
             return 'Late Afternoon'
         else:
-            return 'Evening'
+            return 'Evening' 
 
     # Create new time bucket feature using the assign_time_category function
     feature_vector_df['DeliveryTimes'] = feature_vector_df['PickupTime'].apply(assign_time_category)
     feature_vector_df['DeliveryTimes'] = feature_vector_df['DeliveryTimes'].astype('category')
 
     # Drop 'Pickup - Time' because we have created 'Delivery Times' in its place
-    feature_vector_df.drop('PickupTime', axis=1, inplace=True)
+    #feature_vector_df.drop('PickupTime', axis=1, inplace=True)
 
     # Fill missing precipitation values with 0
     feature_vector_df['Precipitationinmillimeters'] = feature_vector_df['Precipitationinmillimeters'].fillna(value=0)
@@ -146,10 +149,13 @@ def _preprocess_data(data):
                                     feature_vector_df['DestinationLong'])
     
     # One-hot encoding for categorical data
-    feature_vector_df = pd.get_dummies(feature_vector_df,
-                                   columns=['PlatformType', 'PersonalorBusiness', 'PickupDayofMonth', 'PickupWeekday', 'DeliveryTimes'],
-                                   prefix=['platformtype', 'personalbusiness', 'dayofmonth', 'weekday', 'pickuptimes'])
+    #feature_vector_df = pd.get_dummies(feature_vector_df,
+    #                               columns=['PlatformType', 'PersonalorBusiness', 'PickupDayofMonth', 'PickupWeekday', 'DeliveryTimes'],
+    #                               prefix=['platformtype', 'personalbusiness', 'dayofmonth', 'weekday', 'pickuptimes'])'''
 
+    
+    feature_vector_df = feature_vector_df[['PickupLat','PickupLong','DestinationLat','DestinationLong','Distance(KM)','Temperature','Precipitationinmillimeters','Distance_CBD_pickup','Distance_CBD_dest']]
+    
     # ------------------------------------------------------------------------
     
     predict_vector = feature_vector_df
