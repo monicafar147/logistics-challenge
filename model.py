@@ -22,11 +22,17 @@
 """
 
 # Helper Dependencies
-import numpy as np
-import math
-import pandas as pd
-import pickle
 import json
+import numpy as np
+import pandas as pd
+pd.options.mode.chained_assignment = None 
+import math
+
+# Machine learning model
+from sklearn.ensemble import RandomForestRegressor
+
+# Saving model with pickle
+import pickle
 
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
@@ -148,9 +154,34 @@ def _preprocess_data(data):
                                    columns=['PlatformType', 'PersonalorBusiness', 'PickupDayofMonth', 'PickupWeekday', 'DeliveryTimes'],
                                    prefix=['platformtype', 'personalbusiness', 'dayofmonth', 'weekday', 'pickuptimes'])
 
+    model_columns = ['PickupLat', 'PickupLong', 'DestinationLat', 'DestinationLong',
+       'Distance(KM)', 'Temperature', 'Precipitationinmillimeters',
+       'DistanceCBDpickup', 'DistanceCBDdest', 'platformtype_1',
+       'platformtype_2', 'platformtype_3', 'platformtype_4',
+       'personalbusiness_Business', 'personalbusiness_Personal',
+       'dayofmonth_1', 'dayofmonth_2', 'dayofmonth_3', 'dayofmonth_4',
+       'dayofmonth_5', 'dayofmonth_6', 'dayofmonth_7', 'dayofmonth_8',
+       'dayofmonth_9', 'dayofmonth_10', 'dayofmonth_11', 'dayofmonth_12',
+       'dayofmonth_13', 'dayofmonth_14', 'dayofmonth_15', 'dayofmonth_16',
+       'dayofmonth_17', 'dayofmonth_18', 'dayofmonth_19', 'dayofmonth_20',
+       'dayofmonth_21', 'dayofmonth_22', 'dayofmonth_23', 'dayofmonth_24',
+       'dayofmonth_25', 'dayofmonth_26', 'dayofmonth_27', 'dayofmonth_28',
+       'dayofmonth_29', 'dayofmonth_30', 'dayofmonth_31', 'weekday_1',
+       'weekday_2', 'weekday_3', 'weekday_4', 'weekday_5', 'weekday_6',
+       'weekday_7', 'pickuptimes_Afternoon', 'pickuptimes_Evening',
+       'pickuptimes_Late Afternoon', 'pickuptimes_Late Morning',
+       'pickuptimes_Morning']
+
+    for col in model_columns:
+          if col not in training_features.columns:
+               training_features[col] = 0
+
     # ------------------------------------------------------------------------
     
     predict_vector = training_features
+
+    return predict_vector
+    # ------------------------------------------------------------------------
 
     return predict_vector
 
