@@ -75,9 +75,6 @@ def _preprocess_data(data):
     feature_vector_df['PlacementTime'] = pd.to_datetime(feature_vector_df['PlacementTime']).dt.time
     feature_vector_df['ConfirmationTime'] = pd.to_datetime(feature_vector_df['ConfirmationTime']).dt.time
     feature_vector_df['ArrivalatPickupTime'] = pd.to_datetime(feature_vector_df['ArrivalatPickupTime']).dt.time
-    #feature_vector_df['ArrivalatDestinationTime'] = pd.to_datetime(feature_vector_df['ArrivalatDestinationTime']).dt.time
-
-    #feature_vector_df = feature_vector_df[feature_vector_df['TimefromPickuptoArrival'] > 60]
 
     # Converting relevant columns into categorical data types
     feature_vector_df['VehicleType'] = feature_vector_df['VehicleType'].astype('category')
@@ -91,8 +88,6 @@ def _preprocess_data(data):
 
     feature_vector_df['ArrivalatPickupDayofMonth'] = feature_vector_df['ArrivalatPickupDayofMonth'].astype('category')
     feature_vector_df['ArrivalatPickupWeekday'] = feature_vector_df['ArrivalatPickupWeekday'].astype('category')
-    #feature_vector_df['ArrivalatDestinationDayofMonth'] = feature_vector_df['ArrivalatDestinationDayofMonth'].astype('category')
-    #feature_vector_df['ArrivalatDestinationWeekday'] = feature_vector_df['ArrivalatDestinationWeekday'].astype('category')
 
     #selecting training features
     training_features = feature_vector_df.iloc[:, :-1]
@@ -134,7 +129,6 @@ def _preprocess_data(data):
     # Fill missing precipitation values with 0
     training_features['Precipitationinmillimeters'] = training_features['Precipitationinmillimeters'].fillna(value=0)
    
-    # Impute missing temperature based on delivery time
     # Function to fill nulls with a column's mean value
     def mean(col):
       return col.fillna(col.mean())
