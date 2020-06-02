@@ -23,6 +23,7 @@
 
 # Helper Dependencies
 import numpy as np
+import math
 import pandas as pd
 import pickle
 import json
@@ -68,31 +69,32 @@ def _preprocess_data(data):
     feature_vector_df['PlacementTime'] = pd.to_datetime(feature_vector_df['PlacementTime']).dt.time
     feature_vector_df['ConfirmationTime'] = pd.to_datetime(feature_vector_df['ConfirmationTime']).dt.time
     feature_vector_df['ArrivalatPickupTime'] = pd.to_datetime(feature_vector_df['ArrivalatPickupTime']).dt.time
-    feature_vector_df['ArrivalatDestinationTime'] = pd.to_datetime(feature_vector_df['ArrivalatDestinationTime']).dt.time
+    #feature_vector_df['ArrivalatDestinationTime'] = pd.to_datetime(feature_vector_df['ArrivalatDestinationTime']).dt.time
 
-    # Converting columns into categories
+    #feature_vector_df = feature_vector_df[feature_vector_df['TimefromPickuptoArrival'] > 60]
+
+    # Converting relevant columns into categorical data types
     feature_vector_df['VehicleType'] = feature_vector_df['VehicleType'].astype('category')
     feature_vector_df['PlatformType'] = feature_vector_df['PlatformType'].astype('category')
     feature_vector_df['PersonalorBusiness'] = feature_vector_df['PersonalorBusiness'].astype('category')
 
-    feature_vector_df['PlacementDay of Month'] = feature_vector_df['PlacementDayofMonth'].astype('category')
+    feature_vector_df['PlacementDayofMonth'] = feature_vector_df['PlacementDayofMonth'].astype('category')
     feature_vector_df['PlacementWeekday'] = feature_vector_df['PlacementWeekday'].astype('category')
     feature_vector_df['ConfirmationDayofMonth'] = feature_vector_df['ConfirmationDayofMonth'].astype('category')
     feature_vector_df['ConfirmationWeekday'] = feature_vector_df['ConfirmationWeekday'].astype('category')
 
     feature_vector_df['ArrivalatPickupDayofMonth'] = feature_vector_df['ArrivalatPickupDayofMonth'].astype('category')
     feature_vector_df['ArrivalatPickupWeekday'] = feature_vector_df['ArrivalatPickupWeekday'].astype('category')
-    feature_vector_df['ArrivalatDestinationDayofMonth'] = feature_vector_df['ArrivalatDestinationDayofMonth'].astype('category')
-    feature_vector_df['ArrivalatDestinationWeekday'] = feature_vector_df['ArrivalatDestinationWeekday'].astype('category')
+    #feature_vector_df['ArrivalatDestinationDayofMonth'] = feature_vector_df['ArrivalatDestinationDayofMonth'].astype('category')
+    #feature_vector_df['ArrivalatDestinationWeekday'] = feature_vector_df['ArrivalatDestinationWeekday'].astype('category')
 
-    feature_vector_df[['PickupDayofMonth', 'PickupWeekday']] = feature_vector_df[['PickupDayofMonth', 'PickupWeekday']].astype('category')
-    feature_vector_df[['PlatformType', 'PersonalorBusiness']] = feature_vector_df[['PlatformType', 'PersonalorBusiness']].astype('category')
-
-    # Dropping rows where delivery time is less than 60s
-    feature_vector_df = feature_vector_df[feature_vector_df['TimefromPickuptoArrival'] > 60]
+    #selecting training features
+    training_features = feature_vector_df.iloc[:, :-1]
+    training_features[['PickupDayofMonth', 'PickupWeekday']] = training_features[['PickupDayofMonth', 'PickupWeekday']].astype('category')
+    training_features[['PlatformType', 'PersonalorBusiness']] = training_features[['PlatformType', 'PersonalorBusiness']].astype('category')
     
     # Selecting columns to match training data
-    feature_vector_df = feature_vector_df[['PlatformType', 'PersonalorBusiness',
+    training_features = training_features[['PlatformType', 'PersonalorBusiness',
                                        'PickupDayofMonth', 'PickupWeekday',
                                        'PickupTime', 'PickupLat',	'PickupLong',
                                        'DestinationLat',	'DestinationLong',
@@ -116,43 +118,39 @@ def _preprocess_data(data):
         else:
             return 'Evening'
 
-    # Create new time bucket feature using the assign_time_category function
-    feature_vector_df['DeliveryTimes'] = feature_vector_df['PickupTime'].apply(assign_time_category)
-    feature_vector_df['DeliveryTimes'] = feature_vector_df['DeliveryTimes'].astype('category')
+    # Create new time bucket feature based on assign_time_category function
+    training_features['DeliveryTimes'] = training_features['PickupTime'].apply(assign_time_category)
+    training_features['DeliveryTimes'] = training_features['DeliveryTimes'].astype('category')
 
-    # Drop 'Pickup - Time' because we have created 'Delivery Times' in its place
-    feature_vector_df.drop('PickupTime', axis=1, inplace=True)
+    # Dropping 'Pickup - Time' because we have created 'Delivery Times' in its place
+    training_features.drop('PickupTime', axis=1, inplace=True)
 
     # Fill missing precipitation values with 0
-    feature_vector_df['Precipitationinmillimeters'] = feature_vector_df['Precipitationinmillimeters'].fillna(value=0)
+    training_features['Precipitationinmillimeters'] = training_features['Precipitationinmillimeters'].fillna(value=0)
    
     # Impute missing temperature based on delivery time
     # Function to fill nulls with a column's mean value
     def mean(col):
       return col.fillna(col.mean())
 
-    feature_vector_df['Temperature'] = feature_vector_df.groupby(['DeliveryTimes'])['Temperature'].transform(mean)  
-    
     # Impute missing temperature based on delivery time
-    feature_vector_df['Temperature'] = feature_vector_df.groupby(['DeliveryTimes'])['Temperature'].transform(mean)
+    training_features['Temperature'] = training_features.groupby(['DeliveryTimes'])['Temperature'].transform(mean)
 
     # Function to calculate a coordinate's distance from the CBD coordinate
     def distance_CBD(lat, long):
-        return math.sqrt(((lat - -1.283526) ** 2) + ((long - 36.823269) ** 2))
+      return math.sqrt(((lat - -1.283526) ** 2) + ((long - 36.823269) ** 2))
 
-    feature_vector_df['Distance_CBD_pickup'] = np.vectorize(distance_CBD)(feature_vector_df['PickupLat'],
-                                    feature_vector_df['PickupLong'])
-    feature_vector_df['Distance_CBD_dest'] = np.vectorize(distance_CBD)(feature_vector_df['DestinationLat'],
-                                    feature_vector_df['DestinationLong'])
+    training_features['DistanceCBDpickup'] = np.vectorize(distance_CBD)(training_features['PickupLat'],training_features['PickupLong'])
+    training_features['DistanceCBDdest'] = np.vectorize(distance_CBD)(training_features['DestinationLat'],training_features['DestinationLong'])
     
     # One-hot encoding for categorical data
-    feature_vector_df = pd.get_dummies(feature_vector_df,
+    training_features = pd.get_dummies(training_features,
                                    columns=['PlatformType', 'PersonalorBusiness', 'PickupDayofMonth', 'PickupWeekday', 'DeliveryTimes'],
                                    prefix=['platformtype', 'personalbusiness', 'dayofmonth', 'weekday', 'pickuptimes'])
 
     # ------------------------------------------------------------------------
     
-    predict_vector = feature_vector_df
+    predict_vector = training_features
 
     return predict_vector
 
